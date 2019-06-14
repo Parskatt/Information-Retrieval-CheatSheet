@@ -1,40 +1,14 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% writeLaTeX Example: A quick guide to LaTeX
-%
-% Source: Dave Richeson (divisbyzero.com), Dickinson College
-% 
-% A one-size-fits-all LaTeX cheat sheet. Kept to two pages, so it 
-% can be printed (double-sided) on one piece of paper
-% 
-% Feel free to distribute this example, but please keep the referral
-% to divisbyzero.com
-% 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% How to use writeLaTeX: 
-%
-% You edit the source code here on the left, and the preview on the
-% right shows you the result within a few seconds.
-%
-% Bookmark this page and share the URL with your co-authors. They can
-% edit at the same time!
-%
-% You can upload figures, bibliographies, custom classes and
-% styles using the files menu.
-%
-% If you're new to LaTeX, the wikibook is a great place to start:
-% http://en.wikibooks.org/wiki/LaTeX
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[a4paper,10pt,landscape]{article}
 \usepackage{graphicx}
+\usepackage{listings}
 \usepackage{multicol,multirow}
 \usepackage{calc}
 \usepackage{ifthen}
 \usepackage[landscape]{geometry}
 \usepackage[colorlinks=true,citecolor=blue,linkcolor=blue]{hyperref}
 \usepackage{sectsty}
-\usepackage{mathtools,amsmath}
+\usepackage{mathtools,amsmath,amsfonts}
 
 \ifthenelse{\lengthtest { \paperwidth = 11in}}
     { \geometry{top=.5in,left=.5in,right=.5in,bottom=.5in} }
@@ -95,14 +69,14 @@ Easy to implement but hard to use, and not relative importance or ranking.
 Extended Boolean model has documents as vectors in $(0,1)^K$ e.g. (0.1,0.5,1). We get similarities:
 
 $sim(d_j,q_{or})=(\frac{w_{xj}^2+w_{yj}^2}{2})^{\frac{1}{2}}$
-$sim(d_j,q_{or})=(\frac{(1-w_{xj})^2+(1-w_{yj})^2}{2})^{\frac{1}{2}} $
+$sim(d_j,q_{and})=(\frac{(1-w_{xj})^2+(1-w_{yj})^2}{2})^{\frac{1}{2}} $
 
 \textbf{Algebraic}
 Documents and query are represented as term vectors with term weights.
 
-Cosine similarity: $\frac{<q,t>}{\sqrt{<q,q>\cdot<d,d>}}$
+Cosine similarity: $\frac{<q,d>}{\sqrt{<q,q>\cdot<d,d>}}$
 
-Dice similarity:  $\frac{<q,t>}{<q,1>+<d,1>}$
+Dice similarity:  $\frac{<q,d>}{<q,1>+<d,1>}$
 
 \textbf{Probabilistic}
 
@@ -120,7 +94,7 @@ Issues: Requires feedback, start will be difficult.
 
 Language Models:
 
-2 assumptions.
+2 assumptions. First is only independent for $\Bar{r}$.
 
 \includegraphics[width=.5\linewidth]{images/LMQD.png}
 
@@ -128,8 +102,7 @@ Language Models:
 
 $\log\frac{P(R=r|Q,D)}{P(R=\Bar{r}|Q,D)} = \log\prod_i^mP(Q_i|D,R=r)+\log\frac{P(R=r|D)}{P(R=\Bar{r}|D)}$ if do second assumption we also get $= \log\prod_i^mP(Q_i|D,R=r)$
 
-LM assumes just one document that generates the query and that the user knows something about this document (?)(from slides)(If we assume relevance is independent of document it wouldnt seem this way?Dont understand this sentence)
-
+LM assumes just one document that generates the query and that the user knows something about this document.
 
 \textbf{Jelinek-Mercer smoothing}
 
@@ -195,6 +168,10 @@ Uses
 \end{Figure}
 where $n(d_j,w_i) =$ frequency of $w_i\text{ in } d_j$. This is trained with e.g. EM. 
 
+\includegraphics[width=.75\linewidth]{images/pLSAE.png}
+
+\includegraphics[width=.75\linewidth]{images/pLSAM.png}
+
 \begin{center}
 {\Large \textbf{LDA - Latent Dirichlet Allocation} \par}
 \end{center}
@@ -220,7 +197,17 @@ We fix everything, update the probabilities for z according to:
 \begin{equation*}
     P(z_{ji}=k|z_{¬ji},w,\alpha,\beta)\propto \frac{n_{j,k,\negi}+\alpha}{n_{j,k,\negi}+K\alpha}\cdot\frac{v_{k,w_{ji},\neg}+\beta}{v_{k,\neg}+V\beta}
 \end{equation*}
-Once burned in, sample for each $z_{ji}$. Estimate theta and phi(?).
+Once burned in, sample for each $z_{ji}$. Estimate theta and phi using the below equation.
+
+\includegraphics[width=\linewidth]{images/thetaphi.png}
+
+\textbf{Dirichlet}
+
+$\frac{\prod_i \Gamma(\alpha_i)}{ \Gamma(\sum_i(\alpha_i)}\prod_ix_i^{\alpha_i-1}$
+
+\textbf{Multinomial}
+
+$\frac{\Gamma(\sum_ix_i+1)}{\prod_i\Gamma(x_i+1)}\prod_ip_i^{x_i}$
 
 \begin{center}
 {\Large \textbf{Word Embeddings} \par}
@@ -239,6 +226,14 @@ Basic formulation is:
 The sum is very expensive, instead negative sampling is used where only a few of the other words are used. Also importance sampling is used: $P(w_i)=1-\sqrt{\frac{t}{f(w_i}}$ where $t\approx10^{-5}$
 \vspace{18mm} 
 \begin{center}
+
+\topic{Multimedia Information Retrieval}
+
+Segment images based on local similarity. Videos can be segmented by shot breaks, camera motion, auditory queues textual topic segmentation or multimodal segmentation.
+
+Indexing for images can be done by recognizing patterns, SIFT,CNN, concepts. Same for video as for images.
+For audio indexing can be done with speech recognition and transcriping, or from features obtained by deep learning.
+
 {\Large \textbf{Media Information Fusion} \par}
 \end{center}
 
@@ -266,12 +261,50 @@ $C_F$ measures semantic similarity between all image and text fragments, related
 $C_G$ encourages corresponding image text pairs to have a a higher joint similarity compared to other words/ other images.
 $C_I$ encourages similar image fragments to correlate to similar text fragments.
 
+\topic{Web Information Retrieval}
+
+\textbf{Crawlers}
+
+Problems: Very large volumes, unstructured data, volatile, redundant
+
+Solution: Crawlers traverse web sending new/updated pages to indexing
+
+Distributed crawling: \textbf{Firewall mode} low coverage \textbf{Cross-over mode} can go into other territories, may duplicate pages \textbf{Exchange mode} Crawlers communicate, gives overhead.
+
+Incremental crawling: Use knowledge of structure of the web to visit sites most likely to have changed since last crawl and record changes
+
+Mirror sites: Crawlers should avoid going to replicas of others sites, for example by URL similarity, link structure, content similarity.
+
+\textbf{Indexing}
+
+Contains important information about the site. e.g. nl index terms and metadata, links, file names, image descriptors etc.
+
+\topic{Indexing Structures}
+
+\textbf{Inverted files}
+
+Index term: Stemmed word, or descriptor
+
+Pointers to documents where index occurs.
+
+Usually triplet $<d,f,[o_1,....,o]>$ where d is the indetifier, f is the frequence and o is the occurance.
+
+Space requirement: \textbf{Heaps' law} vocabulary size grows $O(n^{\beta})$ where $\beta$ around 0.5.
+
+\textbf{Semantic Hashing}
+
+Want to hash to binary code. Difficult for cross modal. Use deep semantic hashing to embedd both modalities.
+
 \topic{Retrieval models}
 
 \textbf{PageRank}
 
 Two ways to approach: $P(p) = (1-\gamma)+\gamma\sum_{d->p}\frac{P(d)}{out(d)}$ or in matrix form $((1-\gamma)U + \gamma M)^T$, where the principal right eigenvector of this equation is the pagerank.
 If we add the term $\gamma(\sum_{\in\Gamma}\frac{P(s)}{N})$ for sink nodes, i.e. nodes with only incoming links problems arising from those nodes are lessened.
+
+Personalized: It is possible to show that we can form a personal pagerank by a linear combination of topic pagerank vectors.
+
+\includegraphics[width=\linewidth]{images/pagerank.png}
 
 \textbf{HITS}
 
@@ -301,6 +334,16 @@ $$AP = \frac{1}{|\text{Rel}|}\sum_{r=1}^{|\text{Rel}|}P_r$$
 $P_r=\frac{|Arel_r|}{|A_r|}$
 When averaged over queries $\xrightarrow{}$ mean average precision(MAP)
 Useful for rankings since we care more about the top elements being correct.
+Important: We only count precision at points where there is a relevant document!
+
+\textbf{Kendalls $\tau$}
+
+Given a ranking enumerate all pairs. e.g.
+$(a,b,c) (b,c,a)$ has 3 pairs $(a,b),(a,c),(b,c)$ in this case $(b,c)$ is the only that agree so: $\tau = \frac{1-2}{3}$ 
+
+\textbf{ROCArea}
+
+$ROC(p,\hat{p}) = \frac{1}{rel(|C|-rel)}\sum_{i:p_i=1}\sum_{j:p_j=0}\textbf{1}_{\hat{p}_i>\hat{p_j}}$
 
 \textbf{Discounted cumulative gain (DCG)}
 $$DCG_r = rel_l + \sum_{i=2}^{r}\frac{rel_i}{log_2(i)}$$
@@ -395,7 +438,7 @@ We predict greedily down the DAG. Possible to use different features at each cla
  Solutions:
  Refinement - Extend features with predictions of lower children.
 
-\includegraphics[width=.5\linewidth]{images/CNN_hierarchy}
+\includegraphics[width=\linewidth]{images/CNN_hierarchy}
 
 \textbf{Extreme classificiation}
 Millions of labels. Need fast training and prediction.
@@ -458,6 +501,7 @@ Can also have tagget/end-tagged huffman bytecode where first bit indicates if fi
 
 We convert to $\Delta$-values. i.e. difference between neighbouring positions.
 Methods
+
 \begin{itemize}
 \item Nonparametric codes - static, do not take into account $\Delta$ distribution e.g. $\gamma$ -code
 \item Parametric codes - semi-static, take advantage of the distribution.
@@ -473,6 +517,166 @@ Methods
 Selector describes the length of the body by 0s ended by a 1.
 
 \textbf{$\delta$-code}
+
+\includegraphics[width=.75\linewidth]{images/deltacode.png}
+
+Uses a $\gamma$ -code for the selector, better for long codewords.
+
+\textbf{$\omega$ -code}
+
+Encoding:
+\begin{lstlisting}
+code = 0
+while N != 1
+    code = [bin(N) code]
+    N = len(bin(N))-1
+\end{lstlisting}
+
+Decoding:
+\begin{lstlisting}
+N = 1
+ind = 0
+while code[ind] != 1
+    N = code[ind:ind+N]//Inclusive
+    ind += N+1
+\end{lstlisting}
+
+\textbf{Golomb/Rice codes}
+
+Encode:
+
+Choose M:
+
+q,r = floordiv(N/M), mod(N,M)
+
+code = unary(q)+0 //I.e. 3 = 111 0
+
+code += truncated bin(r)
+
+Truncated binary:
+
+b = len(bin(M))
+
+if $r < 2^b-M$
+
+    use b-1 bits to encode
+
+else
+
+    use b bits to encode
+
+\textbf{LLRUN}
+
+Huffman codes are difficult to use because the set of distinct gaps is about the same as the number of documents. Since the huffman tree needs to store all the distinct gaps it doesn't really reduce size.
+
+Instead we store all gaps in buckets like:
+$B_j = [2^j,2^{j+1}-1]$ used as selector, then j-bit body.
+
+\textbf{Interpolative coding}
+$L = (2,9,12,14,19,21,31,32,33)$
+Encode first and last using e.g. $\gamma$-code. $L[5] \in [6,29]$. Then recursively divide and conquer.
+
+\includegraphics[width=\linewidth]{images/interpolative.png}
+
+\textbf{Byte aligned codes}
+Easiest way: Split $\Delta$-value into 7 bit chucks and prepend with a flag bit indicating end of sequence.
+
+\textbf{Word aligned codes}
+Simple-9: Reserve first 4 bits(selector) to indicate 9 different kinds of splits. See below:
+
+\includegraphics[width=\linewidth]{images/simple9.png}
+
+\textbf{Decoding unaligned codes}
+If length of gaps is known we can have a table lookup for b bits instead of 1 bit sequential.
+
+\textbf{Dictionary Compression}
+
+Group consecutive terms and use pointers to start and end. Front coding:
+〈“shakespeare”,(11,2,“an”),(13,3,“ism”)
+Lempel-Ziv coding after front coding. We can also interleave dictionary with postings.
+
+\topic{Learning to Rank - 6pts only}
+
+\textbf{Loss functions}
+
+Hinge-loss: $L(y,\hat{y}) = \max{0,1-y\hat{y}}$
+Exponential loss: $L(y,\hat{y}) = e^{-y\hat{y}}$
+Logistic loss: $L(y,\hat{y}) = \log{1+e^{y\hat{y}}}$
+
+\includegraphics[width=.75\linewidth]{images/rankloss.png}
+
+\textbf{Pointwise approach}
+
+Input: Feature vector for each document
+
+Output: Score: relevance degree or class that represents relevancy
+
+Loss: Usually mean squared error(cross entropy for class?)
+
+Assumption: Relevance is absolute: a document is judged independently to the other documents for a given query.
+
+\textbf{Pairwise approach}
+
+Input: Pairs of documents, each document feature vector, or pair is represented as feature vector
+
+Output: Pairwise preferences $\in {1,-1}$, can also be pointwise and then combined i.e. $h(x_u,x_v) = 2(f(x_u)>f(x_v))-1$
+
+Loss: $\text{argmin}_h\sum_q\mathcal{L}(h(x_j^q,x_k^q),y_{j,k}^q$
+e.g. pointwise functions then $\text{argmin}_h\sum_q\tau(2(f(x_u)>f(x_v))-1,y_{j,k}^q)$
+
+Kendall's $\tau$ measures pairwise inconsistencies.
+
+Assumptions: No longer assume absolute relevance, classification on document pairs w.r.t. same query.
+
+Example:(\textbf{RankNet}, FRank, RankBoost, Ranking SVM, etc.)
+
+Suppose nn computes scores $s_i = f(x_i^{(q)})$,$s_j = f(x_j^{(q)})$
+
+Probability that "$d_i > d_j$" = $\frac{1}{1+e^{-\sigma(s_i-s_j)}}$, $\sigma$ determines shape of sigmoid.
+
+
+Let $S_{ij} \in {-1,0,1}$. We can the compare to GT $\Bar{p_{ij}}= (1+S_{ij})/2$
+
+$\mathcal{L} = -\Bar{p_{ij}}\log(p{ij})-(1-\Bar{p_{ij}})\log(1-p_{ij})$
+
+Does not model that errors higher up are worse than lower down! Question: Can't we just weigh the pairs in the loss function depending on the position?
+
+\textbf{Listwise approach}
+
+Input: A set of documents associated with the query
+
+Output: A ranked list (or permutation)
+
+Loss:
+
+$h = argmin_h \sum_q \mathcal{L}(h(x^q),y^q) = e.g. argmin_h \sum_q(1-AP(h(x^q),y^q))$
+$SVM^{MAP}$
+
+\includegraphics[width=\linewidth]{images/svmmap.png}
+
+Formulated as a structured SVM. $\Psi$ is a joint feature map. For each pair a set of constraints in the form above is added to the optimization, exponential amount. Solved by only solving with respects to the constraints with the highest violations. The constraints with highest violation are find by first sorting the non-relevant and relevant documents by $\theta(x,d_i)$ we use the property that the AP loss is invariant to position changes between relevant or non-relevant documents to reduce the problem to interleaving the two sorted lists. This is solved in O(n) time, which is very nice.
+
+\textbf{RankCosine}
+
+Loss is given by cosine similarity between score vector from scoring function f and query q and the GT score vector:
+
+$\mathcal{L}(f;x,y) = 1/2 - \frac{\sum_j^m\varphi(y_j)\varphi(f(x_j))}{\sqrt{\sum_j^m\varphi(y_j)^2}\sqrt{\sum_j^m\varphi(f(y_j))^2}}$
+
+\includegraphics[width=\linewidth]{images/learningtoranksummary.png}
+
+\textbf{Diversity}
+
+\begin{itemize}
+    \item Discover information facets of a specific query
+    \item Assess relevance of a document to a particular facet
+    \item Order results by optimization
+\end{itemize}
+
+In some approaches first steps are skips, just add loss function e.g. Maximal Marginal Relevance, maximize implicit user feedback etc.
+
+Can also predict an entire ranking, fits structure prediction models.
+
+Potential development for structured prediction models where relation between documents are important.
 
 \end{multicols}
 \end{document}
